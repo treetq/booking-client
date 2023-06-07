@@ -15,9 +15,11 @@ import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ type }) => {
   const [openDate, setOpenDate] = useState(false);
+  const [destination, setDestination] = useState("");
   const [date, setDate] = useState([
     {
       startDate: new Date(),
@@ -33,6 +35,8 @@ const Header = ({ type }) => {
     room: 1,
   });
 
+  const navigate = useNavigate();
+
   const handleOption = (name, operation) => {
     setOptions((prev) => {
       return {
@@ -40,6 +44,10 @@ const Header = ({ type }) => {
         [name]: operation === "i" ? options[name] + 1 : options[name] - 1,
       };
     });
+  };
+
+  const handleSearch = () => {
+    navigate("/hotels", { state: { destination, date, options } });
   };
 
   return (
@@ -77,8 +85,8 @@ const Header = ({ type }) => {
             <p className="headerDesc">
               Algeria has a rich cultural heritage, diverse landscapes, and
               historical sites like Roman ruins.
-              <p>Discover IT using The Algerian Trip account!</p>
             </p>
+            <p>Discover IT using The Algerian Trip account!</p>
 
             <button className="headerBtn">Sign in / Register</button>
             <div className="headerSearch">
@@ -88,6 +96,7 @@ const Header = ({ type }) => {
                   type="text"
                   placeholder="Where are you going?"
                   className="headerSearchInput"
+                  onChange={(e) => setDestination(e.target.value)}
                 />
               </div>
               <div className="headerSearchItem">
@@ -96,7 +105,7 @@ const Header = ({ type }) => {
                   onClick={() => setOpenDate(!openDate)}
                   className="headerSearchText"
                 >{`${format(date[0].startDate, "dd/MM/yyyy")} to ${format(
-                  date[0].startDate,
+                  date[0].endDate,
                   "dd/MM/yyyy"
                 )}`}</span>
                 {openDate && (
@@ -106,6 +115,7 @@ const Header = ({ type }) => {
                     moveRangeOnFirstSelection={false}
                     ranges={date}
                     className="date"
+                    minDate={new Date()}
                   />
                 )}
               </div>
@@ -194,7 +204,9 @@ const Header = ({ type }) => {
                 )}
               </div>
               <div className="headerSearchItem">
-                <div className="headerBtn">Search</div>
+                <button className="headerBtn" onClick={handleSearch}>
+                  Search
+                </button>
               </div>
             </div>
           </>
